@@ -1,30 +1,37 @@
-// This is a basic Flutter widget test.
+// Test de l'écran de connexion (mode démonstration du cours).
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// MyApp est construit directement, sans passer par main() :
+// Firebase n'est donc pas initialisé ici, ce qui convient car les écrans
+// du cours n'utilisent pas encore Firebase.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:dakarconnectipsl2027/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets("L'application démarre sur l'écran de connexion",
+      (WidgetTester tester) async {
+    // ProviderScope est obligatoire pour utiliser Riverpod.
+    await tester.pumpWidget(const ProviderScope(child: MyApp()));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Bienvenue !'), findsOneWidget);
+    expect(find.text('Se connecter'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('Après connexion, les signalements récents sont affichés',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const ProviderScope(child: MyApp()));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Saisie d'un identifiant et d'un mot de passe de 6 caractères
+    await tester.enterText(find.byType(TextFormField).at(0), 'etudiant@ipsl.sn');
+    await tester.enterText(find.byType(TextFormField).at(1), 'secret');
+    await tester.tap(find.text('Se connecter'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Signalements récents'), findsOneWidget);
   });
 }

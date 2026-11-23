@@ -1,0 +1,28 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'config/router.dart';
+import 'firebase_options.dart'; // Généré UNIQUEMENT par flutterfire configure.
+
+// Point d'entrée : les services natifs doivent être prêts avant Firebase.
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const ProviderScope(child: DakarConnectApp()));
+}
+
+// La configuration du routeur est détenue par Riverpod.
+class DakarConnectApp extends ConsumerWidget {
+  const DakarConnectApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      title: 'DakarConnect',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+      routerConfig: ref.watch(routerProvider),
+    );
+  }
+}

@@ -1,0 +1,113 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../repositories/auth_repository.dart';
+
+class LoginScreen extends ConsumerStatefulWidget {
+  const LoginScreen({super.key});
+  @override
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final formKey = GlobalKey<FormState>();
+  final email = TextEditingController();
+  final password = TextEditingController();
+  final name = TextEditingController();
+  bool register = false;
+  bool busy = false;
+
+  @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    name.dispose();
+    super.dispose();
+  }
+
+  Future<void> submit() async {
+    if (busy || !formKey.currentState!.validate()) return;
+    setState(() => busy = true);
+    try {
+      final repo = ref.read(authRepositoryProvider);
+      if (register) {
+        await repo.signUp(email.text, password.text, name.text);
+      } else {
+        await repo.signIn(email.text, password.text);
+      }
+      // La redirection est pilotée par le flux authStateChanges du routeur.
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Connexion refusée (${e.code}).')));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Connexion impossible. Réessayer.')),
+      );
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(title: Text(register ? 'Créer un compte' : 'Connexion')),
+    body: Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (register)
+                  TextFormField(
+                    controller: name,
+                    decoration: const InputDecoration(labelText: 'Nom complet'),
+                    validator: (v) =>
+                        (v?.trim().isNotEmpty ?? false) ? null : 'Nom requis',
+                  ),
+                TextFormField(
+                  controller: email,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'Adresse e-mail',
+                  ),
+                  validator: (v) => ((v ?? '').contains('@'))
+                      ? null
+                      : 'Adresse e-mail invalide',
+                ),
+                TextFormField(
+                  controller: password,
+                  obscureText: true,
+                  decoration: const InputDecoration(labelText: 'Mot de passe'),
+                  validator: (v) => (v?.length ?? 0) >= 6
+                      ? null
+                      : 'Six caractères au minimum',
+                ),
+                const SizedBox(height: 20),
+                if (busy)
+                  const Center(child: CircularProgressIndicator())
+                else
+                  FilledButton(
+                    onPressed: submit,
+                    child: Text(register ? 'Créer le compte' : 'Se connecter'),
+                  ),
+                TextButton(
+                  onPressed: busy
+                      ? null
+                      : () => setState(() => register = !register),
+                  child: Text(register ? 'Déjà inscrit ?' : 'Créer un compte'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}

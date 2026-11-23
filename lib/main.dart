@@ -1,11 +1,23 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/router.dart';
+import 'firebase_options.dart'; // fichier généré par « flutterfire configure »
 
 // Dr Papa Samour DIOP – Enseignant du cours
 // Point d'entrée principal de l'application Flutter.
 // runApp() démarre l'application et affiche le widget racine.
-void main() => runApp(const ProviderScope(child: MyApp()));
+//
+// Firebase doit être initialisé AVANT runApp() :
+// - WidgetsFlutterBinding.ensureInitialized() prépare Flutter à appeler
+//   du code natif (Android, Web…) avant l'affichage du premier écran ;
+// - Firebase.initializeApp() connecte l'application au projet Firebase,
+//   avec les paramètres générés dans firebase_options.dart.
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const ProviderScope(child: MyApp()));
+}
 
 // ProviderScope initialise l'environnement Riverpod.
 // Il permet aux widgets descendants d'accéder aux providers

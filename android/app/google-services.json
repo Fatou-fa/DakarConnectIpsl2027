@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "370968157557",
+    "project_id": "dakarconnectipsl2027-dd1e0",
+    "storage_bucket": "dakarconnectipsl2027-dd1e0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370968157557:android:8693e3d67a0ff333a2073c",
+        "android_client_info": {
+          "package_name": "com.example.dakarconnectipsl2027"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhq141pW6GvQyDnvlv4ZJTyLxFEbX3eMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
