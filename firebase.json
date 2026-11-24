@@ -1,1 +1,5 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"dakarconnectipsl2027-dd1e0","appId":"1:370968157557:android:8693e3d67a0ff333a2073c","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"dakarconnectipsl2027-dd1e0","configurations":{"android":"1:370968157557:android:8693e3d67a0ff333a2073c","web":"1:370968157557:web:4a27dbad0656ea11a2073c"}}}}}}
+{"flutter":{"platforms":{"android":{"default":{"projectId":"dakarconnectipsl2027-dd1e0","appId":"1:370968157557:android:8693e3d67a0ff333a2073c","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"dakarconnectipsl2027-dd1e0","configurations":{"android":"1:370968157557:android:8693e3d67a0ff333a2073c","web":"1:370968157557:web:4a27dbad0656ea11a2073c"}}}}},
+
+"firestore": {"rules": "backend/firebase/firestore.rules"}
+
+}

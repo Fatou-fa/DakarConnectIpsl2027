@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function owner() { return signedIn() && resource.data.userId == request.auth.uid; }
+
+    match /users/{userId} {
+      // Un profil personnel ne devient pas public par défaut.
+      allow read, delete: if signedIn() && request.auth.uid == userId;
+      allow create, update: if signedIn() && request.auth.uid == userId;
+    }
+    match /incidents/{incidentId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll(['titre', 'description', 'lieu', 'userId', 'createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.titre is string
+        && request.resource.data.description is string
+        && request.resource.data.lieu is string
+        && request.resource.data.titre.size() > 0
+        && request.resource.data.titre.size() <= 200
+        && request.resource.data.description.size() <= 10000;
+      allow update: if owner()
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['titre', 'description', 'lieu', 'imageUrl', 'latitude', 'longitude']);
+      allow delete: if owner();
+    }
+  }
+}
